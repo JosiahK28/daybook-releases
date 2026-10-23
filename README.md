@@ -6,6 +6,7 @@ A private daily tracker for Android: sleep, food, water, exercise, spending, sub
 
 1. **Download:** on your Android phone (Android 8 or later), tap **[Download Daybook](https://github.com/JosiahK28/daybook-releases/releases/latest/download/daybook.apk)**.
 2. **Install:** open the downloaded file. If your phone asks, allow your browser or Files app to install apps, then tap **Install**.
+   - **If the download sits at 100% and then fails:** that's Brave's file check getting stuck. Open the link in Chrome or Samsung Internet instead.
 3. **If Google Play Protect asks about it:** that's because Daybook isn't on the Play Store. You can choose to install it anyway.
 
 ## Updates
