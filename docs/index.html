@@ -3,67 +3,393 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Daybook</title>
-<meta name="description" content="A habit tracker that is also a game. Sleep, food, water, exercise and money, with a pixel dungeon your real days power. Free, offline, no account.">
+<title>Daybook: a habit tracker that's a dungeon</title>
+<meta name="description" content="Log sleep, food, water, exercise and money. Your real days light the torch for a pixel dungeon you play. Free, offline, no account. Android.">
 <meta property="og:title" content="Daybook">
-<meta property="og:description" content="Track your day. Power a pixel dungeon. Free, offline, no account.">
+<meta property="og:description" content="Live your day. Fuel the dungeon. Free, offline, no account.">
+<meta property="og:image" content="https://josiahk28.github.io/daybook-releases/shots/og.png">
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="art/flask_big_red.png">
+<link rel="stylesheet" href="art.css">
 <style>
-  :root { --bg:#0e0d12; --panel:#1a1822; --line:#2e2a3c; --ink:#f1ead8; --muted:#a69fb4; --gold:#e0b04a; }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.55 system-ui, sans-serif; }
-  main { max-width:34rem; margin:0 auto; padding:2.5rem 16px 3rem; }
-  h1 { font-size:2.4rem; margin:0 0 .25rem; color:var(--gold); }
-  p.lead { font-size:1.15rem; margin:0 0 1.5rem; }
-  .btn { display:inline-block; background:var(--gold); color:#1b1405; font-weight:700; padding:.9rem 1.4rem; border-radius:8px; text-decoration:none; }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:1rem 1.2rem; margin:1.5rem 0; }
-  .panel h2 { font-size:1rem; margin:0 0 .5rem; color:var(--gold); text-transform:uppercase; letter-spacing:.05em; }
-  ul { padding-left:1.2rem; margin:.25rem 0; } li { margin:.3rem 0; }
-  .muted { color:var(--muted); font-size:.92rem; }
-  .qr { display:none; background:#fff; padding:14px; width:200px; border-radius:6px; margin-top:1rem; }
-  .qr img { width:100%; display:block; }
-  @media (hover:hover) and (pointer:fine) { .qr { display:block; } .desk { display:block !important; } }
-  .desk { display:none; }
+  @font-face { font-family:"Chakra Petch"; font-weight:700; src:url(fonts/chakra_petch_bold.ttf); font-display:swap; }
+  @font-face { font-family:"Chakra Petch"; font-weight:500; src:url(fonts/chakra_petch_medium.ttf); font-display:swap; }
+  @font-face { font-family:"Cormorant"; font-style:italic; src:url(fonts/cormorant_italic.ttf); font-display:swap; }
+
+  :root {
+    --bg:#0a0c12; --bg2:#10131c; --panel:#161a26; --line:#2a3044; --ink:#efe8d6; --muted:#9aa0b4;
+    --gold:#f5b83d; --ember:#e8683a; --frost:#6fb7e8; --bone:#9be08f; --blood:#d9455a;
+    --s:4; /* pixel scale for sprites */
+  }
+  @media (max-width:640px) { :root { --s:3; } }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; overflow-x:hidden; }
+  h1,h2,h3 { font-family:"Chakra Petch", system-ui, sans-serif; font-weight:700; line-height:1.1; margin:0; }
   a { color:var(--gold); }
+  .wrap { max-width:62rem; margin:0 auto; padding:0 16px; }
+  .quiet { color:var(--muted); }
+  .flavour { font-family:"Cormorant", Georgia, serif; font-style:italic; font-size:1.3em; color:var(--gold); }
+
+  /* Sprites cut from the app's atlas. Whole-pixel scaling, never smoothed. */
+  .spr { display:inline-block; flex:none; image-rendering:pixelated; background-repeat:no-repeat;
+    width:calc(var(--w) * var(--s) * 1px); height:calc(var(--h) * var(--s) * 1px);
+    background-size:calc(var(--n) * var(--w) * var(--s) * 1px) 100%;
+    animation:spr calc(var(--n) / var(--fps, 6) * 1s) steps(var(--n)) infinite; }
+  .spr.still { animation:none; }
+  .spr.flip { transform:scaleX(-1); }
+  @keyframes spr { to { background-position-x:calc(var(--n) * var(--w) * var(--s) * -1px); } }
+  .x2 { --s:2; } .x3 { --s:3; } .x5 { --s:5; } .x6 { --s:6; }
+  .champion { filter:drop-shadow(2px 0 0 var(--gold)) drop-shadow(-2px 0 0 var(--gold)) drop-shadow(0 2px 0 var(--gold)); }
+
+  /* Hero: the dungeon room from the app's own tiles, with a hero being chased along the floor. */
+  .hero { position:relative; min-height:calc(9 * 16 * var(--s) * 1px); background:#0a0c12 url(art/room.png) repeat-x 0 0 / auto calc(14 * 16 * var(--s) * 1px);
+    image-rendering:pixelated; overflow:hidden; border-bottom:4px solid #000; }
+  .hero::before { content:""; position:absolute; inset:0;
+    background:linear-gradient(to right, rgba(10,12,18,.88) 0%, rgba(10,12,18,.55) 45%, rgba(10,12,18,.1) 100%),
+               linear-gradient(to bottom, transparent 55%, rgba(10,12,18,.55)); }
+  .hero .wrap { position:relative; padding-top:calc(2 * 16 * var(--s) * 1px + 12px); padding-bottom:calc(var(--s) * 28px); }
+  .hero h1 { font-size:clamp(2.8rem, 9vw, 5.2rem); color:var(--gold); text-shadow:0 4px 0 #000, 0 0 40px rgba(245,184,61,.35); letter-spacing:.02em; }
+  .hero .tag { font-size:clamp(1.15rem, 3vw, 1.6rem); margin:.35rem 0 1.2rem; max-width:34rem; text-shadow:0 2px 0 #000; }
+  .cta { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .btn { display:inline-block; background:var(--gold); color:#1b1405; font:700 1.05rem "Chakra Petch", sans-serif; letter-spacing:.04em;
+    padding:.9rem 1.5rem; text-decoration:none; border:3px solid #000; box-shadow:0 5px 0 #8a5d10; transition:transform .08s, box-shadow .08s; }
+  .btn:hover { transform:translateY(2px); box-shadow:0 3px 0 #8a5d10; }
+  .btn.ghost { background:transparent; color:var(--ink); border-color:var(--line); box-shadow:none; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:1.1rem; }
+  .chip { background:rgba(22,26,38,.85); border:1px solid var(--line); padding:.2rem .7rem; font-size:.85rem; color:var(--muted); }
+  .lane { position:absolute; left:0; right:0; bottom:10px; height:calc(36 * var(--s) * 1px); pointer-events:none; }
+  .runner { position:absolute; bottom:0; left:0; display:flex; align-items:flex-end; gap:calc(var(--s) * 10px); animation:patrol 16s linear -7s infinite; }
+  @keyframes patrol { from { transform:translateX(-45vw); } to { transform:translateX(115vw); } }
+  .fountain { position:absolute; right:calc(16 * var(--s) * 1px * 3); top:calc(16 * var(--s) * 1px); }
+  .fountain.basin { top:calc(32 * var(--s) * 1px); }
+  @media (max-width:640px) { .fountain { display:none; } }
+  .torch-glow { position:absolute; inset:0; background:radial-gradient(circle at 80% 20%, rgba(232,104,58,.18), transparent 40%); animation:flick 3s ease-in-out infinite alternate; }
+  @keyframes flick { to { opacity:.55; } }
+
+  section { padding:4.5rem 0; position:relative; }
+  section.alt { background:var(--bg2); border-top:3px solid #000; border-bottom:3px solid #000; }
+  .kicker { font:500 .85rem "Chakra Petch", sans-serif; letter-spacing:.2em; text-transform:uppercase; color:var(--ember); margin-bottom:.6rem; }
+  h2 { font-size:clamp(1.8rem, 5vw, 2.8rem); margin-bottom:.8rem; }
+  .lead { font-size:1.15rem; max-width:40rem; color:#d6d0c0; margin:0 0 2.2rem; }
+
+  .grid { display:grid; gap:14px; }
+  .g3 { grid-template-columns:repeat(auto-fit, minmax(15.5rem, 1fr)); }
+  .g2 { grid-template-columns:repeat(auto-fit, minmax(19rem, 1fr)); }
+  .card { background:var(--panel); border:2px solid var(--line); padding:1.2rem 1.2rem 1.3rem; position:relative; }
+  .card h3 { font-size:1.2rem; margin:.7rem 0 .3rem; }
+  .card p { margin:0; color:#c9c4b4; font-size:.97rem; }
+  .card .art { height:calc(28 * 3px); display:flex; align-items:flex-end; gap:10px; }
+
+  .stat { border-left:5px solid var(--c, var(--gold)); }
+  .stat .tagline { font:500 .8rem "Chakra Petch"; letter-spacing:.12em; text-transform:uppercase; color:var(--c, var(--gold)); }
+
+  /* The loop */
+  .steps { counter-reset:step; display:grid; gap:14px; grid-template-columns:repeat(auto-fit, minmax(13rem, 1fr)); }
+  .step { background:var(--panel); border:2px solid var(--line); padding:1.2rem; position:relative; }
+  .step::before { counter-increment:step; content:counter(step); position:absolute; top:-16px; left:14px; background:var(--gold); color:#1b1405; font:700 1.1rem "Chakra Petch"; width:34px; height:34px; display:grid; place-items:center; border:3px solid #000; }
+  .step h3 { margin:.4rem 0 .3rem; font-size:1.15rem; }
+  .step p { margin:0; font-size:.95rem; color:#c9c4b4; }
+
+  /* Classes */
+  .klass { text-align:center; }
+  .klass .stage { height:calc(36 * var(--s) * 1px); display:flex; justify-content:center; align-items:flex-end; gap:12px; background:linear-gradient(to top, rgba(255,255,255,.05), transparent); border-bottom:3px solid #000; margin:-1.2rem -1.2rem 1rem; padding-bottom:6px; }
+  .klass h3 { font-size:1.5rem; }
+  .klass .role { font-family:"Cormorant", serif; font-style:italic; font-size:1.2rem; margin-bottom:.4rem; }
+  .klass.w { --c:var(--blood); } .klass.m { --c:var(--frost); } .klass.n { --c:var(--bone); }
+  .klass .role, .klass h3 { color:var(--c); }
+  .klass:hover .stage .spr:first-child { animation-duration:.5s; }
+
+  /* Doors */
+  .doors { display:grid; grid-template-columns:repeat(auto-fit, minmax(7rem, 1fr)); gap:10px; margin:0 0 2.5rem; }
+  .door { background:var(--panel); border:2px solid var(--line); text-align:center; padding:1rem .5rem .8rem; }
+  .door .spr { margin-bottom:.5rem; }
+  .door b { display:block; font:700 1rem "Chakra Petch"; }
+  .door small { color:var(--muted); font-size:.82rem; display:block; line-height:1.35; }
+  .door .ico { height:calc(24 * var(--s) * 1px); display:flex; align-items:flex-end; justify-content:center; }
+
+  .facts { display:grid; grid-template-columns:repeat(auto-fit, minmax(10rem, 1fr)); gap:12px; margin-bottom:2.5rem; }
+  .fact { text-align:center; padding:1rem; border:2px dashed var(--line); }
+  .fact b { display:block; font:700 2.4rem "Chakra Petch"; color:var(--gold); line-height:1; }
+  .fact span { color:var(--muted); font-size:.9rem; }
+
+  /* Bestiary marquee */
+  .bestiary { overflow:hidden; border-top:3px solid #000; border-bottom:3px solid #000; background:#07090e url(art/room.png) repeat-x 0 -96px / auto calc(14 * 16 * 3px); padding:1.2rem 0 .2rem; position:relative; }
+  .bestiary::before { content:""; position:absolute; inset:0; background:rgba(7,9,14,.72); }
+  .belt { display:flex; align-items:flex-end; gap:46px; width:max-content; animation:belt 60s linear infinite; position:relative; }
+  .belt .spr { --s:3; }
+  .belt .big { --s:3; }
+  @keyframes belt { to { transform:translateX(-50%); } }
+  .bestiary:hover .belt { animation-play-state:paused; }
+  .caption { text-align:center; position:relative; margin:.8rem 0 .6rem; font-size:.85rem; color:var(--muted); }
+
+  /* Everyday tools */
+  .shots { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:1.5rem; }
+  .shots img { height:96px; border:2px solid var(--line); background:#000; }
+  .bullets { list-style:none; padding:0; margin:0; display:grid; gap:12px; }
+  .bullets li { padding-left:2.2rem; position:relative; }
+  .bullets li::before { content:""; position:absolute; left:0; top:.35em; width:16px; height:16px; background:url(art/ui_heart_full.png) no-repeat center / contain; image-rendering:pixelated; }
+  .bullets b { color:var(--ink); }
+
+  /* Privacy */
+  .vault { display:grid; gap:20px; grid-template-columns:auto 1fr; align-items:center; }
+  @media (max-width:640px) { .vault { grid-template-columns:1fr; } }
+
+  /* Install */
+  .install { display:grid; gap:2rem; grid-template-columns:1.3fr 1fr; align-items:start; }
+  @media (max-width:760px) { .install { grid-template-columns:1fr; } }
+  ol.how { padding-left:1.3rem; margin:0 0 1.5rem; } ol.how li { margin:.55rem 0; }
+  .qrbox { background:#fff; padding:14px; width:220px; display:none; }
+  .qrbox img { width:100%; display:block; }
+  @media (hover:hover) and (pointer:fine) { .qrbox, .qrcap { display:block; } }
+  .qrcap { display:none; font-size:.9rem; color:var(--muted); margin-top:.6rem; max-width:220px; }
+  details { background:var(--panel); border:2px solid var(--line); padding:.9rem 1.1rem; margin:10px 0; }
+  summary { cursor:pointer; font:700 1.05rem "Chakra Petch"; }
+  details p { margin:.6rem 0 0; color:#c9c4b4; }
+
+  footer { padding:3rem 0 4rem; border-top:3px solid #000; color:var(--muted); font-size:.88rem; text-align:center; }
+  footer .spr { margin-bottom:12px; }
+  footer p { max-width:44rem; margin:.4rem auto; }
+
+  .ios-note { display:none; }
+  .is-ios .ios-note { display:block; } .is-ios .dl { display:none; }
+
+  /* Fade-in as sections scroll into view (only when JS runs). */
+  .js .rise { opacity:0; transform:translateY(18px); transition:opacity .6s, transform .6s; }
+  .js .rise.in { opacity:1; transform:none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spr, .runner, .belt, .torch-glow { animation:none !important; }
+    .runner { transform:translateX(30vw); }
+    .js .rise { opacity:1; transform:none; transition:none; }
+    html { scroll-behavior:auto; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>Daybook</h1>
-  <p class="lead">A habit tracker that's also a game. Log sleep, food, water, exercise and spending, and your real days power a pixel dungeon.</p>
 
-  <a class="btn" href="https://github.com/JosiahK28/daybook-releases/releases/latest/download/daybook.apk" id="dl">Download for Android</a>
-  <p class="muted" id="note">About 13 MB. Free. No account, no ads.</p>
-  <div class="desk muted">On a computer? Scan this with your phone's camera.</div>
-  <div class="qr"><img src="qr.svg" alt="QR code for the Daybook download"></div>
-
-  <div class="panel">
-    <h2>Installing</h2>
-    <ol>
-      <li>Tap Download and open the file when it finishes.</li>
-      <li>Android asks to allow installs from your browser. Allow it once.</li>
-      <li>If Play Protect warns about an unknown developer, choose <b>Install anyway</b>. Daybook isn't on the Play Store yet.</li>
-    </ol>
+<header class="hero">
+  <div class="torch-glow"></div>
+  <span class="spr s-wall_fountain_mid_red_anim fountain" style="--fps:5"></span>
+  <span class="spr s-wall_fountain_basin_red_anim fountain basin" style="--fps:5"></span>
+  <div class="wrap">
+    <h1>Daybook</h1>
+    <p class="tag">Live your day. <span class="flavour" style="font-size:1.15em">Fuel the dungeon.</span><br>A habit tracker that's secretly a pixel game.</p>
+    <div class="cta">
+      <a class="btn dl" id="dl" href="https://github.com/JosiahK28/daybook-releases/releases/latest/download/daybook.apk">Download for Android</a>
+      <a class="btn ghost" href="#how">How it works</a>
+    </div>
+    <div class="chips">
+      <span class="chip">Free</span><span class="chip">Works offline</span><span class="chip">No account</span><span class="chip">No ads</span><span class="chip" id="ver">Android</span>
+    </div>
+    <p class="ios-note quiet">Daybook is Android only for now. Open this page on an Android phone to install it.</p>
   </div>
-
-  <div class="panel">
-    <h2>What you get</h2>
-    <ul>
-      <li>Everything stays on your phone. Nothing is uploaded.</li>
-      <li>Reminders, a home-screen widget and Quick Settings tiles for fast logging.</li>
-      <li>Daily quests, a weekly boss and a dungeon you can play.</li>
-      <li>It updates itself from the same page.</li>
-    </ul>
+  <div class="lane" aria-hidden="true">
+    <div class="runner">
+      <span class="spr s-knight_m_run_anim" style="--fps:10"></span>
+      <span class="spr s-goblin_run_anim" style="--fps:10"></span>
+      <span class="spr s-skelet_idle_anim" style="--fps:8"></span>
+      <span class="spr s-big_zombie_idle_anim" style="--fps:7"></span>
+    </div>
   </div>
+</header>
 
-  <p class="muted" id="ios" hidden>Daybook is Android only for now.</p>
-  <p class="muted"><a href="https://github.com/JosiahK28/daybook-releases">Release notes and older versions</a></p>
-</main>
+<section id="six">
+  <div class="wrap">
+    <p class="kicker rise">The real world</p>
+    <h2 class="rise">Six small things a day</h2>
+    <p class="lead rise">Tap to log. That's the whole job. Daybook keeps it fast enough that you actually do it, and it never nags you about the days you missed.</p>
+    <div class="grid g3">
+      <div class="card stat rise" style="--c:#7aa7ff"><div class="art"><span class="spr x3 still s-flask_big_blue"></span></div><p class="tagline">Sleep</p><h3>Bed and wake</h3><p>Two taps. Judged against a window you set, not a perfect number.</p></div>
+      <div class="card stat rise" style="--c:#f5b83d"><div class="art"><span class="spr x3 still s-flask_big_yellow"></span></div><p class="tagline">Energy</p><h3>Food, in Calories or kJ</h3><p>Log meals and your own saved foods. A snack doesn't finish the quest; the target is a band.</p></div>
+      <div class="card stat rise" style="--c:#6fb7e8"><div class="art"><span class="spr x3 still s-flask_big_blue" style="filter:hue-rotate(-30deg) saturate(1.3)"></span></div><p class="tagline">Water</p><h3>Cups, not maths</h3><p>Quick buttons you set yourself, from the app, a tile or a widget.</p></div>
+      <div class="card stat rise" style="--c:#9be08f"><div class="art"><span class="spr x3 still s-flask_big_green"></span></div><p class="tagline">Exercise</p><h3>Minutes that count</h3><p>A weekly target, split across the week. Optional Health Connect hints, read on the phone.</p></div>
+      <div class="card stat rise" style="--c:#e8683a"><div class="art"><span class="spr x3 s-coin_anim" style="--fps:8"></span></div><p class="tagline">Spending</p><h3>What's left today</h3><p>One honest number: your safe-to-spend today. Categories you can rename or hide.</p></div>
+      <div class="card stat rise" style="--c:#d9455a"><div class="art"><span class="spr x3 still s-flask_big_red"></span></div><p class="tagline">Subscriptions &amp; habits</p><h3>Renewals and your own habits</h3><p>See what renews and when. Add habits with +1 / −1, skip a day, drag to reorder.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="how">
+  <div class="wrap">
+    <p class="kicker rise">The loop</p>
+    <h2 class="rise">Your day lights the torch.<br>You play the dungeon.</h2>
+    <p class="lead rise">Logging earns you quests, XP, gold and torchlight. It never buys combat power. That comes from playing, so the game can't be cheated by lying to a tracker.</p>
+    <div class="steps">
+      <div class="step rise"><div class="art"><span class="spr x3 still s-flask_big_yellow"></span></div><h3>Log your day</h3><p>Five quests a day. Finish them for XP, a streak and a bright torch.</p></div>
+      <div class="step rise"><div class="art"><span class="spr x3 s-wall_fountain_mid_red_anim"></span></div><h3>Torch burns, hero fights</h3><p>Even when you're away, the Delve idles on. Your real week sets how it goes.</p></div>
+      <div class="step rise"><div class="art"><span class="spr x3 s-knight_m_idle_anim"></span></div><h3>Descend by hand</h3><p>Play real runs with a thumb stick. Pick relics, pick doors, beat bosses.</p></div>
+      <div class="step rise"><div class="art"><span class="spr x3 still s-weapon_big_hammer"></span></div><h3>Forge and dress up</h3><p>Spend scrap on the Forge, gold on looks. Every class has its own wardrobe.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="classes">
+  <div class="wrap">
+    <p class="kicker rise">Three ways to play</p>
+    <h2 class="rise">Pick a class</h2>
+    <p class="lead rise">Each one has its own skill tree, its own look and its own rhythm.</p>
+    <div class="grid g3">
+      <div class="card klass w rise">
+        <div class="stage"><span class="spr s-knight_m_idle_anim" style="--fps:5"></span><span class="spr x3 still s-weapon_waraxe" style="margin-bottom:6px"></span></div>
+        <h3>Warrior</h3><div class="role">Swings first, hurts last</div>
+        <p>Fast melee that never swings at thin air. Every hit that lands stacks Guard, up to 40% less damage taken. Stop hitting and it drains.</p>
+      </div>
+      <div class="card klass m rise">
+        <div class="stage"><span class="spr s-wizzard_m_idle_anim" style="--fps:5"></span><span class="spr x3 still s-weapon_frost_staff" style="margin-bottom:6px"></span></div>
+        <h3>Mage</h3><div class="role">Burn it from across the room</div>
+        <p>Fireballs, Meteors with a growing shadow, and Blink that leaves violet dust. Fragile, loud and fun.</p>
+      </div>
+      <div class="card klass n rise">
+        <div class="stage"><span class="spr s-necromancer_anim" style="--fps:5"></span><span class="spr x2 s-skelet_idle_anim" style="--fps:6"></span><span class="spr x3 still s-weapon_bone_scythe" style="margin-bottom:6px"></span></div>
+        <h3>Necromancer</h3><div class="role">Never fights alone</div>
+        <p>Raise skeletons, bone mages and a golem. Reap with a scythe, throw bone spears that come back.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="descent">
+  <div class="wrap">
+    <p class="kicker rise">The Descent</p>
+    <h2 class="rise">Every run goes somewhere different</h2>
+    <p class="lead rise">Floors chain together and your health comes with you. Between them, choose a door. Then keep what you've carried, or press on and risk it.</p>
+    <div class="doors">
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-flask_big_yellow"></span></div><b>Relic</b><small>Builds into something. 34 of them.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 s-wall_fountain_mid_blue_anim"></span></div><b>Fountain</b><small>Heal up.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-weapon_big_hammer"></span></div><b>Anvil</b><small>Sharpen what you have.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x3 s-coin_anim"></span></div><b>Cache</b><small>Scrap, carried until you leave.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 champion s-orc_warrior_idle_anim"></span></div><b>Champion</b><small>Gold-edged and nastier. Better loot.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-skull"></span></div><b>Shrine</b><small>Power now, a curse later.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 s-chest_full_open_anim" style="--fps:2"></span></div><b>Chest</b><small>One in five bites back.</small></div>
+    </div>
+    <div class="facts">
+      <div class="fact rise"><b>34</b><span>relics, nine tags</span></div>
+      <div class="fact rise"><b>7</b><span>hidden fusions to find</span></div>
+      <div class="fact rise"><b>6</b><span>bosses, six different fights</span></div>
+      <div class="fact rise"><b>1</b><span>daily descent, same for everyone</span></div>
+    </div>
+    <p class="lead rise" style="margin:0">Bosses show a red ring on the floor before every move. Step out of it. Each one changes at half health, and you can stun them mid-windup.</p>
+  </div>
+</section>
+
+<div class="bestiary" aria-label="Some of the monsters you'll meet">
+  <div class="belt" aria-hidden="true">
+    <!-- The row is listed twice so the loop has no seam. -->
+    <script>
+      (function () {
+        var row = [
+          ["boss_rotjaw_idle_anim","big"],["skelet_idle_anim"],["goblin_run_anim"],["imp_idle_anim"],["boss_gorrak_idle_anim","big"],
+          ["ice_zombie_anim"],["pumpkin_dude_idle_anim"],["necromancer_anim"],["boss_vexmaw_idle_anim","big"],["swampy_anim"],["tiny_zombie_idle_anim"],
+          ["bone_golem_idle_anim","big"],["chort_idle_anim"],["boss_ember_duke_idle_anim","big"],["orc_shaman_idle_anim"],["chest_mimic_open_anim"],
+          ["boss_ironhide_idle_anim","big"],["muddy_anim"],["masked_orc_idle_anim"],["boss_mirebelly_idle_anim","big"],["slug_anim"]
+        ];
+        var html = "";
+        for (var k = 0; k < 2; k++) row.forEach(function (r, i) {
+          html += '<span class="spr s-' + r[0] + (r[1] ? ' big' : '') + (i % 3 ? '' : ' flip') + '" style="--fps:' + (5 + (i % 3)) + '"></span>';
+        });
+        document.currentScript.insertAdjacentHTML("afterend", html);
+      })();
+    </script>
+  </div>
+  <p class="caption">Slimes that split. Ice zombies that slow you. Necromancers that raise the dead. Mimics. And six bosses.</p>
+</div>
+
+<section id="quick">
+  <div class="wrap">
+    <div class="grid g2" style="align-items:center">
+      <div>
+        <p class="kicker rise">Quick as a tap</p>
+        <h2 class="rise">Log without opening it</h2>
+        <ul class="bullets rise">
+          <li><b>Widgets.</b> A water cup, a habit, what's left to spend. Tap to log from the home screen.</li>
+          <li><b>Quick Settings tiles.</b> Pull down the panel and log water, a habit or a purchase.</li>
+          <li><b>Reminders that behave.</b> Ten-minute windows, no special alarm permission, and a +1 button right in the notification.</li>
+          <li><b>Habits your way.</b> Yes/no or counted, minimum or maximum, skip a day, drag to reorder.</li>
+        </ul>
+      </div>
+      <div class="rise">
+        <div class="shots">
+          <img src="shots/widget_tally.png" alt="Widget showing $37 left today" height="96">
+          <img src="shots/widget_readout.png" alt="Readout widget" height="96">
+          <img src="shots/widget_phase.png" alt="Phase widget" height="96">
+        </div>
+        <p class="quiet" style="font-size:.88rem;margin-top:.8rem">Home-screen widgets, as they appear on the phone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="privacy">
+  <div class="wrap vault">
+    <div class="rise"><span class="spr x5 still s-chest_full_open_anim"></span></div>
+    <div class="rise">
+      <p class="kicker">Yours alone</p>
+      <h2>Your data stays in your pocket</h2>
+      <p class="lead" style="margin-bottom:.8rem">No account. No analytics. No ads. Everything you log is stored on your phone and goes nowhere unless you export it.</p>
+      <p class="quiet" style="margin:0">The app goes online for one reason: it asks GitHub if a newer version exists, and you choose whether it may. Nothing about you or your logs is sent. Backups and exports are yours to keep.</p>
+    </div>
+  </div>
+</section>
+
+<section id="get">
+  <div class="wrap">
+    <p class="kicker rise">Get it</p>
+    <h2 class="rise">Install in under a minute</h2>
+    <div class="install">
+      <div class="rise">
+        <ol class="how">
+          <li>Tap <b>Download</b> and open the file when it finishes.</li>
+          <li>Android asks to allow installs from your browser. Allow it once.</li>
+          <li>If Play Protect says "unknown developer", choose <b>Install anyway</b>. Daybook isn't on the Play Store yet.</li>
+          <li>It updates itself from here after that.</li>
+        </ol>
+        <a class="btn dl" href="https://github.com/JosiahK28/daybook-releases/releases/latest/download/daybook.apk">Download for Android</a>
+        <p class="ios-note quiet">Daybook is Android only for now.</p>
+        <p class="quiet" style="font-size:.9rem;margin-top:1rem">About 13 MB. <a href="https://github.com/JosiahK28/daybook-releases/releases">Release notes and older versions</a>.</p>
+      </div>
+      <div class="rise">
+        <div class="qrbox"><img src="qr.svg" alt="QR code for this page"></div>
+        <p class="qrcap">On a computer? Scan this with your phone's camera to open this page there.</p>
+      </div>
+    </div>
+
+    <h2 style="font-size:1.6rem;margin:3.5rem 0 .6rem" class="rise">Questions</h2>
+    <details class="rise"><summary>Why does Android warn me?</summary><p>Daybook isn't on the Play Store, so Android and Play Protect treat it as an app from outside. The file is signed with the same key for every release, and every update is checked against it before installing.</p></details>
+    <details class="rise"><summary>Is it really free?</summary><p>Yes. No purchases, no ads, no subscription. It's a personal project that friends can use.</p></details>
+    <details class="rise"><summary>Can logging more make my hero stronger?</summary><p>No. Logging fuels torchlight, gold and looks. Combat power comes from playing runs, so the game stays fair and you can't cheat a tracker for it.</p></details>
+    <details class="rise"><summary>What if I miss a day?</summary><p>There's a rest week, honest "started" and "done" quest states, and no shaming. Missed days are just missed days.</p></details>
+    <details class="rise"><summary>What about iPhone?</summary><p>Not yet. Daybook is Android only for now.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="spr x3 s-knight_m_idle_anim"></span>
+    <p>Daybook is made by Josiah. The pixel art is <a href="https://0x72.itch.io/dungeontileset-ii">DungeonTileset II</a> by 0x72 (CC0), with extra frames drawn in the same palette. Icons are <a href="https://lucide.dev">Lucide</a> (ISC). Fonts are Chakra Petch and Cormorant (SIL Open Font License).</p>
+    <p><a href="https://github.com/JosiahK28/daybook-releases/releases">Releases</a></p>
+  </div>
+</footer>
+
 <script>
-  if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-    document.getElementById('ios').hidden = false;
-    document.getElementById('dl').style.display = 'none';
-    document.getElementById('note').style.display = 'none';
-  }
+  var root = document.documentElement;
+  root.classList.add("js");
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent)) root.classList.add("is-ios");
+
+  // Fade sections in as they scroll into view.
+  var items = document.querySelectorAll(".rise");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: .12 });
+    items.forEach(function (el, i) { el.style.transitionDelay = (i % 4) * 60 + "ms"; io.observe(el); });
+  } else items.forEach(function (el) { el.classList.add("in"); });
+
+  // Show the latest version on the page. If GitHub can't be reached, the chip just says Android.
+  fetch("https://api.github.com/repos/JosiahK28/daybook-releases/releases/latest")
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) { if (j && j.tag_name) document.getElementById("ver").textContent = "Android · " + j.tag_name; })
+    .catch(function () {});
 </script>
 </body>
 </html>
