@@ -79,6 +79,8 @@
   .card { background:var(--panel); border:2px solid var(--line); padding:1.2rem 1.2rem 1.3rem; position:relative; }
   .card h3 { font-size:1.2rem; margin:.7rem 0 .3rem; }
   .card p { margin:0; color:#c9c4b4; font-size:.97rem; }
+  .ic { width:40px; height:40px; color:var(--c, var(--gold)); }
+  .stat .art { height:48px; margin-bottom:.4rem; display:flex; align-items:flex-end; }
   .card .art { height:calc(28 * 3px); display:flex; align-items:flex-end; gap:10px; }
 
   .stat { border-left:5px solid var(--c, var(--gold)); }
@@ -90,6 +92,16 @@
   .step::before { counter-increment:step; content:counter(step); position:absolute; top:-16px; left:14px; background:var(--gold); color:#1b1405; font:700 1.1rem "Chakra Petch"; width:34px; height:34px; display:grid; place-items:center; border:3px solid #000; }
   .step h3 { margin:.4rem 0 .3rem; font-size:1.15rem; }
   .step p { margin:0; font-size:.95rem; color:#c9c4b4; }
+
+  .mark { image-rendering:pixelated; width:42px; height:auto; }
+  .step { padding-top:1.6rem; }
+  .step .art { height:90px; display:flex; align-items:flex-end; margin-bottom:.3rem; }
+  .purses { display:grid; grid-template-columns:repeat(auto-fit, minmax(10.5rem, 1fr)); gap:10px; margin-top:2.2rem; }
+  .purse { display:flex; gap:12px; align-items:center; background:var(--panel); border:2px solid var(--line); padding:.7rem .9rem; }
+  .purse .mark, .purse .spr { flex:none; }
+  .purse b { display:block; font:700 1rem "Chakra Petch"; }
+  .purse small { color:var(--muted); font-size:.82rem; line-height:1.3; display:block; }
+  .purse .glyph { width:42px; text-align:center; font-size:30px; color:#4CC9F0; line-height:1; }
 
   /* Classes */
   .klass { text-align:center; }
@@ -198,14 +210,14 @@
   <div class="wrap">
     <p class="kicker rise">The real world</p>
     <h2 class="rise">Six small things a day</h2>
-    <p class="lead rise">Tap to log. That's the whole job. Daybook keeps it fast enough that you actually do it, and it never nags you about the days you missed.</p>
+    <p class="lead rise">Tap to log. That's the whole job. Daybook keeps it fast enough that you actually do it.</p>
     <div class="grid g3">
-      <div class="card stat rise" style="--c:#7aa7ff"><div class="art"><span class="spr x3 still s-flask_big_blue"></span></div><p class="tagline">Sleep</p><h3>Bed and wake</h3><p>Two taps. Judged against a window you set, not a perfect number.</p></div>
-      <div class="card stat rise" style="--c:#f5b83d"><div class="art"><span class="spr x3 still s-flask_big_yellow"></span></div><p class="tagline">Energy</p><h3>Food, in Calories or kJ</h3><p>Log meals and your own saved foods. A snack doesn't finish the quest; the target is a band.</p></div>
-      <div class="card stat rise" style="--c:#6fb7e8"><div class="art"><span class="spr x3 still s-flask_big_blue" style="filter:hue-rotate(-30deg) saturate(1.3)"></span></div><p class="tagline">Water</p><h3>Cups, not maths</h3><p>Quick buttons you set yourself, from the app, a tile or a widget.</p></div>
-      <div class="card stat rise" style="--c:#9be08f"><div class="art"><span class="spr x3 still s-flask_big_green"></span></div><p class="tagline">Exercise</p><h3>Minutes that count</h3><p>A weekly target, split across the week. Optional Health Connect hints, read on the phone.</p></div>
-      <div class="card stat rise" style="--c:#e8683a"><div class="art"><span class="spr x3 s-coin_anim" style="--fps:8"></span></div><p class="tagline">Spending</p><h3>What's left today</h3><p>One honest number: your safe-to-spend today. Categories you can rename or hide.</p></div>
-      <div class="card stat rise" style="--c:#d9455a"><div class="art"><span class="spr x3 still s-flask_big_red"></span></div><p class="tagline">Subscriptions &amp; habits</p><h3>Renewals and your own habits</h3><p>See what renews and when. Add habits with +1 / −1, skip a day, drag to reorder.</p></div>
+      <div class="card stat rise" style="--c:#8A78F0"><div class="art"><svg class="ic" aria-hidden="true"><use href="icons.svg#moon"/></svg></div><p class="tagline">Sleep</p><h3>Bed and wake</h3><p>Log when you went to bed and woke up. On target means inside a window you set, not an exact minute.</p></div>
+      <div class="card stat rise" style="--c:#DD6428"><div class="art"><svg class="ic" aria-hidden="true"><use href="icons.svg#utensils"/></svg></div><p class="tagline">Energy</p><h3>Food, in Calories or kJ</h3><p>Log meals and your own saved foods. A snack doesn't finish the quest; the target is a band.</p></div>
+      <div class="card stat rise" style="--c:#2E9BE0"><div class="art"><svg class="ic" aria-hidden="true"><use href="icons.svg#droplet"/></svg></div><p class="tagline">Water</p><h3>Cups, not maths</h3><p>Quick buttons you set yourself, from the app, a tile or a widget.</p></div>
+      <div class="card stat rise" style="--c:#2FB060"><div class="art"><svg class="ic" aria-hidden="true"><use href="icons.svg#dumbbell"/></svg></div><p class="tagline">Exercise</p><h3>Minutes that count</h3><p>A weekly target, split across the week. Optional Health Connect hints, read on the phone.</p></div>
+      <div class="card stat rise" style="--c:#C9921A"><div class="art"><svg class="ic" aria-hidden="true"><use href="icons.svg#receipt"/></svg></div><p class="tagline">Spending</p><h3>What's left today</h3><p>One honest number: your safe-to-spend today. Categories you can rename or hide.</p></div>
+      <div class="card stat rise" style="--c:#d9455a"><div class="art"><svg class="ic" aria-hidden="true"><use href="icons.svg#repeat"/></svg></div><p class="tagline">Subscriptions &amp; habits</p><h3>Renewals and your own habits</h3><p>See what renews and when. Add habits with +1 / −1, skip a day, drag to reorder.</p></div>
     </div>
   </div>
 </section>
@@ -214,12 +226,20 @@
   <div class="wrap">
     <p class="kicker rise">The loop</p>
     <h2 class="rise">Your day lights the torch.<br>You play the dungeon.</h2>
-    <p class="lead rise">Logging earns you quests, XP, gold and torchlight. It never buys combat power. That comes from playing, so the game can't be cheated by lying to a tracker.</p>
+    <p class="lead rise">Logging earns XP, torchlight and shards. Shards and gold buy looks, never power. Combat power comes from playing, so you can't cheat the game by lying to a tracker.</p>
     <div class="steps">
-      <div class="step rise"><div class="art"><span class="spr x3 still s-flask_big_yellow"></span></div><h3>Log your day</h3><p>Five quests a day. Finish them for XP, a streak and a bright torch.</p></div>
-      <div class="step rise"><div class="art"><span class="spr x3 s-wall_fountain_mid_red_anim"></span></div><h3>Torch burns, hero fights</h3><p>Even when you're away, the Delve idles on. Your real week sets how it goes.</p></div>
+      <div class="step rise"><div class="art"><img class="mark" src="art/mark_xp.png" alt="XP" width="21" height="21"></div><h3>Log your day</h3><p>Finish the day's quests for XP, and one hour of torchlight for each. Streaks and trophies pay shards.</p></div>
+      <div class="step rise"><div class="art"><img class="mark" src="art/mark_torch.png" alt="Torchlight" width="21" height="24"></div><h3>Torch burns, hero fights</h3><p>While the torch burns, your hero explores on its own and finds gold, even when you're away.</p></div>
       <div class="step rise"><div class="art"><span class="spr x3 s-knight_m_idle_anim"></span></div><h3>Descend by hand</h3><p>Play real runs with a thumb stick. Pick relics, pick doors, beat bosses.</p></div>
-      <div class="step rise"><div class="art"><span class="spr x3 still s-weapon_big_hammer"></span></div><h3>Forge and dress up</h3><p>Spend scrap on the Forge, gold on looks. Every class has its own wardrobe.</p></div>
+      <div class="step rise"><div class="art"><span class="spr x3 still s-weapon_hammer"></span></div><h3>Forge and dress up</h3><p>Scrap from runs buys Forge ranks. Gold buys weapons; shards buy bodies and pets.</p></div>
+
+    </div>
+    <div class="purses">
+      <div class="purse rise"><img class="mark" src="art/mark_xp.png" alt="" width="21" height="21"><div><b>XP</b><small>Levels you up. Never spent.</small></div></div>
+      <div class="purse rise"><img class="mark" src="art/mark_torch.png" alt="" width="21" height="24"><div><b>Torchlight</b><small>Time your hero can explore.</small></div></div>
+      <div class="purse rise"><img class="mark" src="art/mark_shards.png" alt="" width="21" height="21"><div><b>Shards</b><small>Earned by looking after yourself. Buy looks and pets.</small></div></div>
+      <div class="purse rise"><span class="spr x3 s-coin_anim" style="--fps:8"></span><div><b>Gold</b><small>Found by the idle hero. Buys weapons.</small></div></div>
+      <div class="purse rise"><span class="glyph" aria-hidden="true">⚒</span><div><b>Scrap</b><small>Salvage from runs. Turns into combat power.</small></div></div>
     </div>
   </div>
 </section>
@@ -228,7 +248,7 @@
   <div class="wrap">
     <p class="kicker rise">Three ways to play</p>
     <h2 class="rise">Pick a class</h2>
-    <p class="lead rise">Each one has its own skill tree, its own look and its own rhythm.</p>
+    <p class="lead rise">Each one has its own skill tree, its own look and its own rhythm. The Warrior is yours from the start; the Mage and Necromancer unlock with scrap.</p>
     <div class="grid g3">
       <div class="card klass w rise">
         <div class="stage"><span class="spr s-knight_m_idle_anim" style="--fps:5"></span><span class="spr x3 still s-weapon_waraxe" style="margin-bottom:6px"></span></div>
@@ -255,16 +275,16 @@
     <h2 class="rise">Every run goes somewhere different</h2>
     <p class="lead rise">Floors chain together and your health comes with you. Between them, choose a door. Then keep what you've carried, or press on and risk it.</p>
     <div class="doors">
-      <div class="door rise"><div class="ico"><span class="spr x2 still s-flask_big_yellow"></span></div><b>Relic</b><small>Builds into something. 34 of them.</small></div>
-      <div class="door rise"><div class="ico"><span class="spr x2 s-wall_fountain_mid_blue_anim"></span></div><b>Fountain</b><small>Heal up.</small></div>
-      <div class="door rise"><div class="ico"><span class="spr x2 still s-weapon_big_hammer"></span></div><b>Anvil</b><small>Sharpen what you have.</small></div>
-      <div class="door rise"><div class="ico"><span class="spr x3 s-coin_anim"></span></div><b>Cache</b><small>Scrap, carried until you leave.</small></div>
-      <div class="door rise"><div class="ico"><span class="spr x2 champion s-orc_warrior_idle_anim"></span></div><b>Champion</b><small>Gold-edged and nastier. Better loot.</small></div>
-      <div class="door rise"><div class="ico"><span class="spr x2 still s-skull"></span></div><b>Shrine</b><small>Power now, a curse later.</small></div>
-      <div class="door rise"><div class="ico"><span class="spr x2 s-chest_full_open_anim" style="--fps:2"></span></div><b>Chest</b><small>One in five bites back.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-flask_big_yellow"></span></div><b>Relic</b><small>Pick one of three. They build into something.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 s-wall_fountain_basin_blue_anim"></span></div><b>Fountain</b><small>Heals 40%.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-weapon_hammer"></span></div><b>Anvil</b><small>Rank up a relic you hold.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-crate"></span></div><b>Cache</b><small>A pile of scrap, carried until you leave.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 champion s-orc_warrior_idle_anim"></span></div><b>Champion</b><small>Gold-edged pack. Beat it for a rare relic.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 still s-wall_banner_red"></span></div><b>Shrine</b><small>A rare relic now, a curse for the rest of the descent.</small></div>
+      <div class="door rise"><div class="ico"><span class="spr x2 s-chest_full_open_anim" style="--fps:2"></span></div><b>Chest</b><small>A relic or scrap. One in five bites back.</small></div>
     </div>
     <div class="facts">
-      <div class="fact rise"><b>34</b><span>relics, nine tags</span></div>
+      <div class="fact rise"><b>29</b><span>relics across nine tags</span></div>
       <div class="fact rise"><b>7</b><span>hidden fusions to find</span></div>
       <div class="fact rise"><b>6</b><span>bosses, six different fights</span></div>
       <div class="fact rise"><b>1</b><span>daily descent, same for everyone</span></div>
@@ -302,7 +322,7 @@
         <p class="kicker rise">Quick as a tap</p>
         <h2 class="rise">Log without opening it</h2>
         <ul class="bullets rise">
-          <li><b>Widgets.</b> A water cup, a habit, what's left to spend. Tap to log from the home screen.</li>
+          <li><b>Widgets.</b> Today's water, energy, spending and sleep with quick-log buttons, a quiet readout, a single big figure, or a moon that fills as you finish quests.</li>
           <li><b>Quick Settings tiles.</b> Pull down the panel and log water, a habit or a purchase.</li>
           <li><b>Reminders that behave.</b> Ten-minute windows, no special alarm permission, and a +1 button right in the notification.</li>
           <li><b>Habits your way.</b> Yes/no or counted, minimum or maximum, skip a day, drag to reorder.</li>
@@ -310,9 +330,9 @@
       </div>
       <div class="rise">
         <div class="shots">
-          <img src="shots/widget_tally.png" alt="Widget showing $37 left today" height="96">
-          <img src="shots/widget_readout.png" alt="Readout widget" height="96">
-          <img src="shots/widget_phase.png" alt="Phase widget" height="96">
+          <img src="shots/widget_tally.png" alt="Tally widget showing $37 left today" height="96">
+          <img src="shots/widget_readout.png" alt="Readout widget: sleep, water, Calories and money left" height="96">
+          <img src="shots/widget_phase.png" alt="Phase widget: a moon that fills as quests are finished" height="96">
         </div>
         <p class="quiet" style="font-size:.88rem;margin-top:.8rem">Home-screen widgets, as they appear on the phone.</p>
       </div>
@@ -357,8 +377,8 @@
     <h2 style="font-size:1.6rem;margin:3.5rem 0 .6rem" class="rise">Questions</h2>
     <details class="rise"><summary>Why does Android warn me?</summary><p>Daybook isn't on the Play Store, so Android and Play Protect treat it as an app from outside. The file is signed with the same key for every release, and every update is checked against it before installing.</p></details>
     <details class="rise"><summary>Is it really free?</summary><p>Yes. No purchases, no ads, no subscription. It's a personal project that friends can use.</p></details>
-    <details class="rise"><summary>Can logging more make my hero stronger?</summary><p>No. Logging fuels torchlight, gold and looks. Combat power comes from playing runs, so the game stays fair and you can't cheat a tracker for it.</p></details>
-    <details class="rise"><summary>What if I miss a day?</summary><p>There's a rest week, honest "started" and "done" quest states, and no shaming. Missed days are just missed days.</p></details>
+    <details class="rise"><summary>Can logging more make my hero stronger?</summary><p>No. Logging earns XP, torchlight and shards, and those buy time, levels and looks. Combat power comes from playing runs, so you can't cheat a tracker for it.</p></details>
+    <details class="rise"><summary>What if I miss a day?</summary><p>There's a rest week, and quests show "started" or "done" honestly. Streaks can be saved with a campfire. Nothing punishes you for a missed day.</p></details>
     <details class="rise"><summary>What about iPhone?</summary><p>Not yet. Daybook is Android only for now.</p></details>
   </div>
 </section>

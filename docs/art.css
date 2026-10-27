@@ -65,6 +65,7 @@
 .s-weapon_regular_sword{--w:10;--h:21;--n:1;background-image:url(art/weapon_regular_sword.png)}
 .s-weapon_frost_staff{--w:8;--h:30;--n:1;background-image:url(art/weapon_frost_staff.png)}
 .s-weapon_red_magic_staff{--w:8;--h:30;--n:1;background-image:url(art/weapon_red_magic_staff.png)}
+.s-weapon_hammer{--w:10;--h:24;--n:1;background-image:url(art/weapon_hammer.png)}
 .s-weapon_scythe{--w:27;--h:32;--n:1;background-image:url(art/weapon_scythe.png)}
 .s-weapon_bone_scythe{--w:27;--h:32;--n:1;background-image:url(art/weapon_bone_scythe.png)}
 .s-weapon_night_scythe{--w:27;--h:32;--n:1;background-image:url(art/weapon_night_scythe.png)}
