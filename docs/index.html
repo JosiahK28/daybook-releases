@@ -163,6 +163,45 @@
   footer .spr { margin-bottom:12px; }
   footer p { max-width:44rem; margin:.4rem auto; }
 
+  /* Phones: tighter rhythm, full-width buttons, comfortable tap targets, no sideways overflow. */
+  html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+  .g2 { grid-template-columns:repeat(auto-fit, minmax(min(19rem, 100%), 1fr)); }
+  .g3 { grid-template-columns:repeat(auto-fit, minmax(min(15.5rem, 100%), 1fr)); }
+  .wrap { padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+  footer { padding-bottom:calc(4rem + env(safe-area-inset-bottom)); }
+  @media (max-width:640px) {
+    body { font-size:16px; }
+    section { padding:3rem 0; }
+    .lead { font-size:1.05rem; margin-bottom:1.6rem; }
+    .hero::before { background:linear-gradient(to bottom, rgba(10,12,18,.7), rgba(10,12,18,.8) 60%, rgba(10,12,18,.55)); }
+    .hero .wrap { padding-top:calc(1.2 * 16 * var(--s) * 1px + 12px); }
+    .hero .tag { margin-bottom:1.4rem; }
+    .cta { flex-direction:column; align-items:stretch; }
+    .btn { text-align:center; padding:1rem 1.2rem; min-height:52px; }
+    .chips { gap:6px; }
+    .chip { font-size:.8rem; }
+    .install .btn { display:block; }
+    .card, .step { padding-left:1rem; padding-right:1rem; }
+    .klass .stage { margin-left:-1rem; margin-right:-1rem; }
+    .steps { gap:26px; }
+    .doors { grid-template-columns:repeat(2, 1fr); }
+    .door:last-child:nth-child(odd) { grid-column:1 / -1; }
+    .facts { grid-template-columns:repeat(2, 1fr); }
+    .fact b { font-size:2rem; }
+    .purses { grid-template-columns:1fr; }
+    .shots { justify-content:center; }
+    .shots img { height:auto; width:calc(50% - 7px); max-width:180px; object-fit:contain; }
+    .vault { text-align:center; justify-items:center; }
+    .belt { gap:30px; animation-duration:45s; }
+    summary { padding:.35rem 0; min-height:44px; display:flex; align-items:center; }
+    details { padding:.5rem 1rem; }
+    .bullets li { padding-left:1.9rem; }
+  }
+  @media (max-width:340px) {
+    .hero h1 { font-size:2.5rem; }
+    .doors { grid-template-columns:1fr; }
+  }
+
   .ios-note { display:none; }
   .is-ios .ios-note { display:block; } .is-ios .dl { display:none; }
 
